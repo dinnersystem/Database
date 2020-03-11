@@ -2,7 +2,7 @@
 DROP PROCEDURE IF EXISTS make_order;
 DELIMITER $$
 
-CREATE PROCEDURE make_order(usr_id INT ,maker_id INT ,dishes varchar(1024) ,esti_recv DATETIME)
+CREATE PROCEDURE make_order(usr_id INT ,dishes varchar(1024) ,esti_recv DATETIME)
 proce: BEGIN
     DECLARE money_id INT;
     DECLARE logistics_id INT;
@@ -49,16 +49,9 @@ proce: BEGIN
     
 	SET logistics_id = (SELECT MAX(id) FROM logistics_info);
     
-    INSERT INTO `orders`
-	(`money_id`,
-	`user_id`, `order_maker` ,
-	`logistics_id`)
-	VALUES
-	(
-		money_id,
-		usr_id, maker_id ,
-		logistics_id
-    );
+    INSERT INTO `orders`(`money_id`, `user_id` , `logistics_id`)
+	VALUES (money_id, usr_id,  logistics_id);
+    
 	SELECT MAX(O.id) FROM orders AS O INTO @oid;
 
 	SET insert_order = REPLACE(dishes ,')' ,',@oid)');
@@ -119,4 +112,4 @@ proce: BEGIN
     commit;
 END$$
 delimiter ;
-CALL make_order(1, 1, '(1 ,2 ,3 ,4)' ,CURRENT_TIMESTAMP);
+CALL make_order(1, '(1 ,2 ,3 ,4)' ,CURRENT_TIMESTAMP);

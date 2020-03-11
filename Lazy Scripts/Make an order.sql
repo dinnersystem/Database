@@ -1,1 +1,1 @@
-CALL make_order(-1 ,-1 ,'(601)' ,CURRENT_TIMESTAMP);
+CALL make_order(-1 ,'(601)' ,CURRENT_TIMESTAMP);
