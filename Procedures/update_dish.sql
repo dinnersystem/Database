@@ -9,24 +9,8 @@ BEGIN
 	WHERE (dh.die_at > '9999-12-31 00:00:00' or dh.die_at is null)
     and dh.dish_id = id;
     
-	INSERT INTO `dish_history`
-	(`dish_id`,
-	`factory_name`,
-	`dish_name`,
-	`charge`,
-	`daily_limit`,
-	`die_at`)
-	VALUES
-	(id,
-	(
-		SELECT CONCAT(F.name ,"-" ,DP.name) 
-        FROM factory AS F ,dish AS D ,department AS DP
-        WHERE D.id = id AND D.department_id = DP.id AND DP.factory = F.id
-	),
-	dname,
-	charge,
-	daily_limit,
-	'9999-12-31 23:59:59');
+	INSERT INTO `dish_history` (`dish_id`, `dish_name`, `charge`, `daily_limit`, `die_at`)
+	VALUES (id, vege, dname, charge, daily_limit, '9999-12-31 23:59:59');
 
 	UPDATE `dish`
 	SET `dish_name` = dname,
