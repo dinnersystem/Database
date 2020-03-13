@@ -53,7 +53,7 @@ proce: BEGIN
 	VALUES (money_id, usr_id,  logistics_id);
     
 	SELECT MAX(O.id) FROM orders AS O INTO @oid;
-
+    
 	SET insert_order = REPLACE(dishes ,')' ,',@oid)');
 	SET insert_order = REPLACE(insert_order ,',' ,',@oid),(');
 	SET insert_order = REPLACE(insert_order ,',(@oid)' ,'');
