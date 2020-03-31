@@ -9,7 +9,7 @@ BEGIN
 	WHERE (dh.die_at > '9999-12-31 00:00:00' or dh.die_at is null)
     and dh.dish_id = id;
     
-	INSERT INTO `dish_history` (`dish_id`, `dish_name`, `charge`, `daily_limit`, `die_at`)
+	INSERT INTO `dish_history` (`dish_id`,`vege`, `dish_name`, `charge`, `daily_limit`, `die_at`)
 	VALUES (id, vege, dname, charge, daily_limit, '9999-12-31 23:59:59');
 
 	UPDATE `dish`
