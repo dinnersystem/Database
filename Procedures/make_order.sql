@@ -71,11 +71,6 @@ proce: BEGIN
 		WHERE O.id = @oid AND B.dish = D.id AND B.order = O.id
 	)
 	WHERE id = money_id;
-	
-	UPDATE factory AS F
-	SET F.sum = IF(DATE(F.last_update) = DATE(CURRENT_TIMESTAMP), F.sum + 1 ,1), 
-	F.last_update = CURRENT_TIMESTAMP
-	WHERE F.id = @fid;
     
 	IF (SELECT NOT F.activated AND F.external FROM factory AS F WHERE F.id = @fid) THEN
 		SET org_addition = 1;
@@ -88,6 +83,12 @@ proce: BEGIN
     O.last_update = CURRENT_TIMESTAMP
     WHERE O.id = (SELECT U.organization_id FROM users AS U, factory AS F WHERE F.id = @fid AND U.id = F.boss_id);
 	
+    UPDATE factory AS F
+	SET F.sum = IF(DATE(F.last_update) = DATE(CURRENT_TIMESTAMP), F.sum + 1 ,1), 
+	F.last_update = CURRENT_TIMESTAMP,
+    F.activated = TRUE
+	WHERE F.id = @fid;
+    
 	UPDATE user_information AS UI
 	SET UI.sum = IF(DATE(UI.last_update) = DATE(CURRENT_TIMESTAMP), UI.sum + 1, 1),
     UI.last_update = CURRENT_TIMESTAMP
