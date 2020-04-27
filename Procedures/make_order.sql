@@ -10,10 +10,12 @@ proce: BEGIN
 	DECLARE oid INT;
 	DECLARE daily_limit INT;
 	DECLARE orders INT;
+    DECLARE org_addition INT;
 	DECLARE insert_order VARCHAR(1024);
 	DECLARE user_exceed BOOL;
 	DECLARE factory_exceed BOOL;
 	DECLARE dish_exceed BOOL;
+    DECLARE org_exceed BOOL;
 	
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -74,6 +76,17 @@ proce: BEGIN
 	SET F.sum = IF(DATE(F.last_update) = DATE(CURRENT_TIMESTAMP), F.sum + 1 ,1), 
 	F.last_update = CURRENT_TIMESTAMP
 	WHERE F.id = @fid;
+    
+	IF (SELECT NOT F.activated AND F.external FROM factory AS F WHERE F.id = @fid) THEN
+		SET org_addition = 1;
+	ELSE
+		SET org_addition = 0;
+	END IF;
+    
+    UPDATE organization AS O
+    SET O.external_sum = IF(DATE(O.last_update) = DATE(CURRENT_TIMESTAMP), O.external_sum + org_addition ,org_addition),
+    O.last_update = CURRENT_TIMESTAMP
+    WHERE O.id = (SELECT U.organization_id FROM users AS U, factory AS F WHERE F.id = @fid AND U.id = F.boss_id);
 	
 	UPDATE user_information AS UI
 	SET UI.sum = IF(DATE(UI.last_update) = DATE(CURRENT_TIMESTAMP), UI.sum + 1, 1),
@@ -101,7 +114,10 @@ proce: BEGIN
         WHERE id IN 
 			(SELECT B.dish FROM buffet AS B WHERE B.order = @oid)) 
 		< 0);
-	IF user_exceed OR factory_exceed OR dish_exceed THEN 
+	SET org_exceed = ((
+		SELECT MIN(IF(O.max_external = -1 ,1 ,O.max_external - O.external_sum)) FROM organization AS O
+		WHERE O.id = (SELECT U.organization_id FROM users AS U, factory AS F WHERE F.id = @fid AND U.id = F.boss_id)) < 0);
+	IF user_exceed OR factory_exceed OR dish_exceed OR org_exceed THEN 
 		SELECT "daily limit exceed";
 		ROLLBACK;
 		LEAVE proce;
