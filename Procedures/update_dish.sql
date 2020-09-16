@@ -1,4 +1,6 @@
 #### update dish ####
+use dinnersys;
+
 DROP PROCEDURE IF EXISTS update_dish;
 
 DELIMITER $$
