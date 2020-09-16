@@ -24,4 +24,4 @@ BEGIN
 END$$
 DELIMITER ;
 
-CALL update_dish(1 ,'qwer' ,87 ,1 ,FALSE ,5487);
+# CALL update_dish(1 ,'qwer' ,87 ,1 ,FALSE ,5487);
